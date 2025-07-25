@@ -100,44 +100,63 @@ function Home() {
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredRestaurants.map(r => (
-            <div key={r._id} className="bg-white rounded-xl shadow p-4 flex flex-col items-start hover:shadow-2xl transition-shadow duration-300 relative group transform hover:-translate-y-1 animate-fade-in">
-              <div className="h-32 w-full bg-gray-100 rounded mb-3 flex items-center justify-center overflow-hidden">
+            <div key={r._id} className="bg-white rounded-2xl shadow-lg p-5 flex flex-col items-start hover:shadow-2xl transition-shadow duration-300 relative group transform hover:-translate-y-1 animate-fade-in border border-gray-100">
+              <div className="h-32 w-full bg-gray-100 rounded-xl mb-3 flex items-center justify-center overflow-hidden relative">
                 {r.image ? (
                   <img src={r.image} alt={r.name} className="object-cover w-full h-32 group-hover:scale-105 transition-transform duration-300" />
                 ) : (
                   <span className="text-gray-400">Image</span>
                 )}
                 <span className="absolute top-2 right-2 bg-yellow-400 text-xs font-bold px-2 py-1 rounded shadow">★ {r.rating || 'N/A'}</span>
+                {r.isVeg && <span className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow">PURE VEG</span>}
+                {r.offer && <span className="absolute bottom-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{r.offer}</span>}
               </div>
               <h3 className="text-lg font-semibold mb-1 text-gray-800 flex items-center gap-2">
                 {r.name}
               </h3>
-              <p className="text-gray-500 mb-1 text-sm">{r.cuisine || 'Multi-cuisine'}</p>
-              <p className="text-gray-400 mb-2 text-xs">{r.address}</p>
-              <Link to={`/restaurants/${r._id}`} className="mt-auto text-red-500 hover:bg-red-50 hover:text-red-700 font-medium px-3 py-1 rounded-full transition-colors duration-200">View Menu</Link>
+              <div className="flex flex-wrap gap-1 mb-1">
+                {(r.cuisine ? r.cuisine.split(',') : ['Multi-cuisine']).map(c => (
+                  <span key={c} className="bg-orange-100 text-orange-600 text-xs px-2 py-0.5 rounded-full font-medium">{c.trim()}</span>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-gray-400 text-xs">{r.address}</span>
+                <span className="text-gray-400 text-xs">·</span>
+                <span className="text-green-600 text-xs font-semibold">{r.deliveryTime || '30-40 min'}</span>
+              </div>
+              <Link to={`/restaurants/${r._id}`} className="mt-auto text-white bg-red-500 hover:bg-red-600 font-medium px-4 py-1.5 rounded-full transition-colors duration-200 shadow">View Menu</Link>
             </div>
           ))}
         </div>
+        {/* Section Divider */}
+        <div className="my-12 border-t border-gray-200"></div>
         {/* Top Restaurant Chains (demo) */}
         <div className="mt-12">
           <h2 className="text-xl font-bold mb-4 text-gray-800">Top Restaurant Chains</h2>
           <div className="flex gap-6 overflow-x-auto pb-2 hide-scrollbar">
             {filteredRestaurants.slice(0, 4).map(r => (
-              <div key={r._id} className="min-w-[220px] bg-white rounded-xl shadow p-4 flex flex-col items-start hover:shadow-lg transition">
-                <div className="h-24 w-full bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
+              <div key={r._id} className="min-w-[220px] bg-white rounded-2xl shadow-lg p-4 flex flex-col items-start hover:shadow-2xl transition-shadow border border-gray-100">
+                <div className="h-24 w-full bg-gray-100 rounded-xl mb-2 flex items-center justify-center overflow-hidden relative">
                   {r.image ? (
                     <img src={r.image} alt={r.name} className="object-cover w-full h-24" />
                   ) : (
                     <span className="text-gray-400">Image</span>
                   )}
+                  <span className="absolute top-2 right-2 bg-yellow-400 text-xs font-bold px-2 py-1 rounded shadow">★ {r.rating || 'N/A'}</span>
+                  {r.isVeg && <span className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow">PURE VEG</span>}
+                  {r.offer && <span className="absolute bottom-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{r.offer}</span>}
                 </div>
                 <h3 className="text-base font-semibold mb-1 text-gray-800 flex items-center gap-2">
                   {r.name}
                   <span className="text-yellow-500 text-xs font-bold">★ {r.rating || 'N/A'}</span>
                 </h3>
-                <p className="text-gray-500 mb-1 text-xs">{r.cuisine || 'Multi-cuisine'}</p>
+                <div className="flex flex-wrap gap-1 mb-1">
+                  {(r.cuisine ? r.cuisine.split(',') : ['Multi-cuisine']).map(c => (
+                    <span key={c} className="bg-orange-100 text-orange-600 text-xs px-2 py-0.5 rounded-full font-medium">{c.trim()}</span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
