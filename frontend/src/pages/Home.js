@@ -1,14 +1,31 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+
 import Hero from '../components/Hero';
 import Footer from '../components/Footer';
+
+const categories = [
+  { name: 'Biryani', icon: '🍛' },
+  { name: 'South Indian', icon: '🍲' },
+  { name: 'Pizza', icon: '🍕' },
+  { name: 'Burger', icon: '🍔' },
+  { name: 'Rolls', icon: '🌯' },
+  { name: 'Cake', icon: '🍰' },
+  { name: 'Ice Cream', icon: '🍦' },
+  { name: 'Salad', icon: '🥗' },
+  { name: 'Chinese', icon: '🥡' },
+  { name: 'Shawarma', icon: '🌮' },
+  { name: 'Kebabs', icon: '🍢' },
+  { name: 'Pasta', icon: '🍝' },
+];
 
 
 function Home() {
   const [restaurants, setRestaurants] = useState([]);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
+  const [category, setCategory] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:5000/api/restaurants')
@@ -21,13 +38,31 @@ function Home() {
   const filteredRestaurants = restaurants.filter(r => {
     const matchesSearch = r.name.toLowerCase().includes(search.toLowerCase()) || r.address.toLowerCase().includes(search.toLowerCase());
     const matchesFilter = filter ? (r.rating && r.rating >= parseFloat(filter)) : true;
-    return matchesSearch && matchesFilter;
+    const matchesCategory = category ? (r.cuisine && r.cuisine.toLowerCase().includes(category.toLowerCase())) : true;
+    return matchesSearch && matchesFilter && matchesCategory;
   });
 
   return (
     <div>
       <Hero />
+      {/* What's on your mind? */}
       <section className="max-w-5xl mx-auto mt-12 px-4">
+        <div className="mb-8">
+          <h2 className="text-xl font-bold mb-3 text-gray-800">What's on your mind?</h2>
+          <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
+            {categories.map(cat => (
+              <button
+                key={cat.name}
+                className={`flex flex-col items-center px-4 py-2 rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-red-50 transition min-w-[80px] ${category === cat.name ? 'border-red-500 ring-2 ring-red-200' : ''}`}
+                onClick={() => setCategory(cat.name === category ? '' : cat.name)}
+              >
+                <span className="text-2xl mb-1">{cat.icon}</span>
+                <span className="text-xs font-medium text-gray-700">{cat.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Featured Restaurants */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
           <h2 className="text-2xl font-bold text-gray-800">Featured Restaurants</h2>
           <div className="flex gap-2">
@@ -52,22 +87,45 @@ function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredRestaurants.map(r => (
-            <div key={r._id} className="bg-white rounded-xl shadow p-6 flex flex-col items-start hover:shadow-lg transition">
-              <div className="h-32 w-full bg-gray-200 rounded mb-4 flex items-center justify-center overflow-hidden">
+            <div key={r._id} className="bg-white rounded-xl shadow p-4 flex flex-col items-start hover:shadow-lg transition relative group">
+              <div className="h-32 w-full bg-gray-100 rounded mb-3 flex items-center justify-center overflow-hidden">
                 {r.image ? (
-                  <img src={r.image} alt={r.name} className="object-cover w-full h-32" />
+                  <img src={r.image} alt={r.name} className="object-cover w-full h-32 group-hover:scale-105 transition-transform" />
                 ) : (
                   <span className="text-gray-400">Image</span>
                 )}
+                <span className="absolute top-2 right-2 bg-yellow-400 text-xs font-bold px-2 py-1 rounded shadow">★ {r.rating || 'N/A'}</span>
               </div>
               <h3 className="text-lg font-semibold mb-1 text-gray-800 flex items-center gap-2">
                 {r.name}
-                <span className="text-yellow-500 text-sm font-bold">★ {r.rating || 'N/A'}</span>
               </h3>
-              <p className="text-gray-500 mb-2">{r.address}</p>
+              <p className="text-gray-500 mb-1 text-sm">{r.cuisine || 'Multi-cuisine'}</p>
+              <p className="text-gray-400 mb-2 text-xs">{r.address}</p>
               <Link to={`/restaurants/${r._id}`} className="mt-auto text-red-500 hover:underline font-medium">View Menu</Link>
             </div>
           ))}
+        </div>
+        {/* Top Restaurant Chains (demo) */}
+        <div className="mt-12">
+          <h2 className="text-xl font-bold mb-4 text-gray-800">Top Restaurant Chains</h2>
+          <div className="flex gap-6 overflow-x-auto pb-2 hide-scrollbar">
+            {filteredRestaurants.slice(0, 4).map(r => (
+              <div key={r._id} className="min-w-[220px] bg-white rounded-xl shadow p-4 flex flex-col items-start hover:shadow-lg transition">
+                <div className="h-24 w-full bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
+                  {r.image ? (
+                    <img src={r.image} alt={r.name} className="object-cover w-full h-24" />
+                  ) : (
+                    <span className="text-gray-400">Image</span>
+                  )}
+                </div>
+                <h3 className="text-base font-semibold mb-1 text-gray-800 flex items-center gap-2">
+                  {r.name}
+                  <span className="text-yellow-500 text-xs font-bold">★ {r.rating || 'N/A'}</span>
+                </h3>
+                <p className="text-gray-500 mb-1 text-xs">{r.cuisine || 'Multi-cuisine'}</p>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="text-center mt-8">
           <Link to="/restaurants" className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-semibold shadow">See All Restaurants</Link>
