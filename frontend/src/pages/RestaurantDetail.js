@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import ReviewList from '../components/ReviewList';
+import ReviewForm from '../components/ReviewForm';
 
 function RestaurantDetail() {
   const { id } = useParams();
@@ -18,6 +20,9 @@ function RestaurantDetail() {
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (!restaurant) return <div className="text-center py-10 text-red-500">Restaurant not found.</div>;
+
+  // For refreshing reviews after submission
+  const [refreshReviews, setRefreshReviews] = useState(false);
 
   return (
     <div className="max-w-3xl mx-auto mt-10 bg-white rounded-xl shadow p-8">
@@ -43,6 +48,12 @@ function RestaurantDetail() {
           <li className="text-gray-400">No menu items available.</li>
         )}
       </ul>
+
+      {/* Review Section */}
+      <div className="mt-8">
+        <ReviewForm restaurantId={id} onReviewAdded={() => setRefreshReviews(r => !r)} />
+        <ReviewList key={refreshReviews} restaurantId={id} />
+      </div>
     </div>
   );
 }
